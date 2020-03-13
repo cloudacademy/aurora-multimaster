@@ -1,6 +1,23 @@
 # aurora-multimaster
 
 ```
+sudo apt-get install mysql-client
+```
+
+```
+HOST=
+MYSQL_PWD=cloudacademy mysql -h $HOST -u admin demo
+```
+
+```
+select @@hostname;
+```
+
+```
+CREATE DATABASE demo;
+```
+
+```
 CREATE TABLE course (
     title VARCHAR(40), 
     instructor VARCHAR(40),
@@ -8,6 +25,10 @@ CREATE TABLE course (
     created DATE, 
     url VARCHAR(256)
 );
+```
+
+```
+INSERT INTO course (title, instructor, duration, created, url) VALUES ('Course1', 'Jeremy Cook', 100, '1999-03-30', 'http://here.com');
 ```
 
 ```
