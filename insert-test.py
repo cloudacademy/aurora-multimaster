@@ -4,8 +4,8 @@ from mysql.connector import errorcode
 import time
 import os
 
-NODE1 = os.environ['AURORA_NODE1']
-NODE2 = os.environ['AURORA_NODE2'] 
+AURORA_NODE1 = os.environ['AURORA_NODE1']
+AURORA_NODE2 = os.environ['AURORA_NODE2'] 
 
 DB_NAME = "demo"
 DB_USER = "admin"
@@ -30,12 +30,12 @@ def insertCourse(connection, courseTitle):
         pass
 
 try:
-    connection1 = mysql.connector.connect(host=NODE1,
+    connection1 = mysql.connector.connect(host=AURORA_NODE1,
                                             database=DB_NAME,
                                             user=DB_USER,
                                             password=DB_PASSWORD)
 
-    connection2 = mysql.connector.connect(host=NODE2,
+    connection2 = mysql.connector.connect(host=AURORA_NODE2,
                                             database=DB_NAME,
                                             user=DB_USER,
                                             password=DB_PASSWORD)
