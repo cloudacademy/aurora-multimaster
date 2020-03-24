@@ -5,7 +5,7 @@ import time
 import os
 
 AURORA_NODE1 = os.environ['AURORA_NODE1']
-AURORA_NODE2 = os.environ['AURORA_NODE2'] 
+AURORA_NODE2 = os.environ['AURORA_NODE2']
 
 DB_NAME = "demo"
 DB_USER = "admin"
@@ -18,17 +18,6 @@ def reconnect(connection):
     except:
         print("reconnection failed...")
 
-def insertCourse(connection, courseTitle):
-    try:
-        sql = "INSERT INTO course (title, instructor, duration, created, url) VALUES (%s, %s, %s, %s, %s)"
-        cursor = connection.cursor()
-        cursor.execute(sql, (courseTitle, 'Jeremy Cook', 100, '1999-03-30', 'http://here.com'))
-        connection.commit()
-        print(cursor.rowcount, "record inserted successfully [{}]...".format(connection.server_host))
-        cursor.close()
-    except:
-        pass
-
 try:
     connection1 = mysql.connector.connect(host=AURORA_NODE1,
                                             database=DB_NAME,
@@ -40,8 +29,14 @@ try:
                                             user=DB_USER,
                                             password=DB_PASSWORD)
 
+    sql = "INSERT INTO course (title, instructor, duration, created, url) VALUES (%s, %s, %s, %s, %s)"
+
     for x in range(100):
-        if x % 2 ==0:
+        courseTitle = "Title{}".format(x)
+        data = (courseTitle, 'Jeremy Cook', 100, '1999-03-30', 'http://here.com')
+
+        #connection load balancing logic
+        if x % 2 == 0:
             connection = connection1
             connection_backup = connection2
         else:
@@ -49,11 +44,19 @@ try:
             connection_backup = connection1
 
         try:
-            courseTitle = "Title{}".format(x)
-            insertCourse(connection, courseTitle)
-        
-        except mysql.connector.Error as error:
-            insert(connection_backup)
+            cursor = connection.cursor()
+            cursor.execute(sql, data)
+            connection.commit()
+            print(cursor.rowcount, "record inserted successfully [{}]...".format(connection.server_host))
+            cursor.close()
+
+        #connection retry logic
+        except mysql.connector.errors.Error:
+            cursor = connection_backup.cursor()
+            cursor.execute(sql, data)
+            connection_backup.commit()
+            print(cursor.rowcount, "record inserted (BACKUP) successfully [{}]...".format(connection_backup.server_host))
+            cursor.close()
 
         if not connection1.is_connected():
             reconnect(connection1)
@@ -63,8 +66,8 @@ try:
 
         time.sleep(0.5)
 
-except:
-    print("Failed to insert record into table {}".format(error))
+except Error as error:
+    print("Failed to insert record into table: {}".format(error))
 
 finally:
     if (connection1.is_connected()):
