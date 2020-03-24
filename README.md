@@ -1,4 +1,4 @@
-# aurora-multimaster
+# Amazon Aurora Multi-Master
 
 ```
 sudo apt-get install mysql-client
