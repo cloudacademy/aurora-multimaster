@@ -2,6 +2,8 @@
 
 ```
 sudo apt-get install mysql-client
+sudo apt install python3-pip
+pip3 install mysql-connector-python
 ```
 
 ```
