@@ -7,7 +7,7 @@ pip3 install mysql-connector-python
 ```
 
 ```
-HOST=
+HOST=<mysql host here>
 MYSQL_PWD=cloudacademy mysql -h $HOST -u admin demo
 ```
 
